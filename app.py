@@ -4,17 +4,18 @@ import joblib
 import requests
 from feature_extractor import extract_features
 import os
-print("Current working directory:", os.getcwd())
-print("Looking for templates in:", os.path.join(os.getcwd(), "templates"))
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
 # Load trained model
 model = joblib.load("phishing_model_final.pkl")
 
-# Google Safe Browsing API key
-API_KEY = "AIzaSyC4lZJS73Otl4uH-5VE8TI_PG0mAJsZgpg"  # Add your key here
-API_URL = "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=" + API_KEY
+# Google Safe Browsing API
+API_KEY = os.getenv("GOOGLE_SAFE_BROWSING_API_KEY")
+API_URL = "https://safebrowsing.googleapis.com/v4/threatMatches:find"
 
 def check_google_safe_browsing(url):
     payload = {
@@ -31,7 +32,12 @@ def check_google_safe_browsing(url):
         }
     }
     try:
-        response = requests.post(API_URL, json=payload)
+        headers = {
+         "X-Goog-Api-Key": API_KEY,
+         "Content-Type": "application/json"
+        }
+
+        response = requests.post(API_URL, headers=headers, json=payload)
         data = response.json()
         if "matches" in data:
             return False
