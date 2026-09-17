@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PhishGuard
+
+    </title>
+    <style>
+        /* Full-page hyperspeed background */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        /* Centered container */
+        .container {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: center;
+            color: #00ffcc;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 4px #00ffcc;
+        }
+
+        textarea {
+            width: 80%;
+            max-width: 600px;
+            height: 50px;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 16px;
+            background: rgba(181, 171, 171, 0.5);
+            color: #f6fbfa;
+            outline: none;
+            resize: none;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            background-color: #00ffcc;
+            color: #000;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #00b399;
+        }
+
+        /* Result overlay at bottom */
+        .result-overlay {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 600px;
+            width: 90%;
+            background: rgba(0,0,0,0.6);
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: #00ffcc;
+            font-size: 16px;
+            text-align: left;
+            box-shadow: 0 0 10px rgba(0,255,204,0.5);
+            backdrop-filter: blur(5px);
+            line-height: 1.6;
+        }
+
+        .result-overlay p {
+            margin: 5px 0;
+            word-break: break-word;
+        }
+
+        .safe { color: #00ff00; }
+        .medium { color: #de3428; }
+        .danger { color: #dc1616; }
+
+    </style>
+</head>
+<body>
+
+<canvas id="hyperspeed-bg"></canvas>
+
+<div class="container">
+  <h1 id="animated-title">PhishGuard</h1>
+
+<style>
+#animated-title span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: slideIn 0.5s forwards;
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+function animateText(id) {
+    const title = document.getElementById(id);
+    const text = title.textContent;
+    title.textContent = '';  // Clear original text
+
+    // Split text into spans for animation
+    for (let i = 0; i < text.length; i++) {
+        const span = document.createElement('span');
+        span.textContent = text[i];
+        span.style.animationDelay = `${i * 0.05}s`; // stagger effect
+        title.appendChild(span);
+    }
+}
+
+// Run animation on page load
+animateText('animated-title');
+</script>
+
+
+
+    <form method="POST">
+        <textarea name="urls" placeholder="Enter one URL per line...">{% if request.form.get('urls') %}{{ request.form.get('urls') }}{% endif %}</textarea><br>
+        <button type="submit">Check URLs</button>
+    </form>
+</div>
+
+{% if result %}
+<div class="result-overlay">
+    {% for url, info in result.items() %}
+        {% if info.type == "Safe" %}
+            <p class="safe">{{ info.type }}</p>
+        {% elif info.type == "Medium Risk" %}
+            <p class="medium">{{ info.type }}</p>
+        {% else %}
+            <p class="danger">{{ info.type }}</p>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+
+
+<script>
+    // Hyperspeed background
+    const canvas = document.getElementById('hyperspeed-bg');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    let speed = 30;
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function initStars(count = 300) {
+        stars = [];
+        for (let i = 0; i < count; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                z: Math.random() * canvas.width
+            });
+        }
+    }
+    initStars();
+
+    function animate() {
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = 'white';
+        for (let i = 0; i < stars.length; i++) {
+            let star = stars[i];
+            star.z -= speed;
+            if (star.z <= 0) star.z = canvas.width;
+
+            let sx = (star.x - canvas.width/2) * (canvas.width/star.z) + canvas.width/2;
+            let sy = (star.y - canvas.height/2) * (canvas.width/star.z) + canvas.height/2;
+
+            ctx.fillRect(sx, sy, 3, 4);
+        }
+        const textarea = document.querySelector('textarea[name="urls"]');
+    const form = textarea.closest('form');
+
+    textarea.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) { // Enter without Shift
+            e.preventDefault(); // prevent newline
+            form.submit();      // submit form
+        }
+    });
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+</script>
+
+</body>
+</html>  this one is final html i wann speed up starts and  bring result box little bit upwards

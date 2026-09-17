@@ -1,0 +1,7 @@
+Flask
+pandas
+joblib
+requests
+xgboost
+scikit-learn
+python-dotenv

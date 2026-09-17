@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment files / secrets
+.env
+.env.*
+!.env.example
+
+# Dataset files
+backend/data.csv
+backend/dataset_features.csv
+
+# Logs
+*.log
+
+# Demo / media files
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# IDE / editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
