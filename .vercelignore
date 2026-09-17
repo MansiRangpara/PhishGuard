@@ -1,0 +1,6 @@
+.env
+.env.*
+.vscode/
+backend/data.csv
+backend/dataset_features.csv
+__pycache__/
