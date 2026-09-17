@@ -1,144 +1,336 @@
-# PhishGuard
+# 🛡️ PhishGuard
 
-AI-powered phishing URL detection system built with **Python, Flask, XGBoost, and Google Safe Browsing API**.
+### ML-Based Phishing URL Detection System
 
-## Overview
+PhishGuard is a web-based phishing URL detection system built with **Python, Flask, XGBoost, and Google Safe Browsing**.
 
-PhishGuard is a web-based cybersecurity application designed to analyze URLs and identify potentially malicious links.
+It analyzes submitted URLs using URL-based machine-learning features and an external Safe Browsing threat check, then classifies URLs as **Safe, Medium Risk, or Dangerous**.
 
-The application uses a machine learning model to classify URLs based on extracted features and provides an additional risk assessment using the Google Safe Browsing API.
+---
 
-## Features
+## 🚀 Features
 
-- Phishing URL detection using **XGBoost**
-- Probability-based URL classification
-- Risk categories:
-  - **Safe**
-  - **Medium Risk**
-  - **Dangerous**
-- Google Safe Browsing API integration
-- Batch URL analysis
-- Web-based interface using Flask
-- Persistent analysis results
+* 🔍 Scan single or multiple URLs at once
+* 🤖 XGBoost-based phishing detection
+* 📊 Phishing probability score
+* 🌐 Google Safe Browsing integration
+* 🛡️ Trusted-domain recognition
+* ⚠️ Brand impersonation detection
+* 📈 Risk classification
+* 💻 Interactive Flask web interface
+* 🔐 API key stored through environment variables
+* 📁 Modular feature extraction and model-training scripts
 
-## Tech Stack
+---
 
-- **Python**
-- **Flask**
-- **XGBoost**
-- **Google Safe Browsing API**
-- **HTML**
-- **CSS**
-- **JavaScript**
+## 🧠 How PhishGuard Works
 
-## Project Structure
+```text
+                    User enters URL
+                          │
+                          ▼
+                  URL Normalization
+                          │
+                          ▼
+                 Feature Extraction
+                          │
+             ┌────────────┴────────────┐
+             │                         │
+             ▼                         ▼
+       Trusted Domain?          Brand Impersonation?
+             │                         │
+          Yes│                         │Yes
+             ▼                         ▼
+           SAFE                    DANGEROUS
+             │
+            No
+             │
+             ▼
+       XGBoost ML Model
+             │
+             ▼
+     Phishing Probability
+             │
+             ▼
+     Google Safe Browsing
+             │
+             ▼
+       Final Classification
+```
+
+---
+
+## 📊 Risk Classification
+
+|                 Phishing Probability | Result         |
+| -----------------------------------: | -------------- |
+|                          0% – 29.99% | 🟢 Safe        |
+|                         30% – 69.99% | 🟡 Medium Risk |
+|                           70% – 100% | 🔴 Dangerous   |
+| Google Safe Browsing threat detected | 🔴 Dangerous   |
+
+Google Safe Browsing can independently identify URLs that match known threat data.
+
+---
+
+## 🧪 URL Features
+
+The XGBoost model uses 16 URL-based features:
+
+```text
+UrlLength
+UrlLengthRT
+HostnameLength
+PathLength
+QueryLength
+NumDot
+NumDashInHostname
+NumHash
+NumAmpersand
+PathLevel
+RandomString
+NoHttps
+EmbeddedBrandName
+AtSymbol
+SubdomainLevel
+DomainInPaths
+```
+
+These features are extracted by `feature_extractor.py`.
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+
+* Python
+* Flask
+
+### Machine Learning
+
+* XGBoost
+* Scikit-learn
+* Pandas
+* Joblib
+
+### Security / Threat Intelligence
+
+* Google Safe Browsing API
+
+### Frontend
+
+* HTML
+* CSS
+* JavaScript
+
+---
+
+## 📂 Project Structure
 
 ```text
 PhishGuard/
-├── app.py
-├── data.py
-├── feature_extractor.py
-├── prepare_dataset.py
-├── train.py
-├── requirements.txt
-├── phishing_model_final.json
-├── phishing_model_final.pkl
-├── static/
-└── templates/
+│
+├── .gitignore
+├── README.md
+│
+└── backend/
+    ├── app.py
+    ├── data.py
+    ├── feature_extractor.py
+    ├── phishing_model_final.pkl
+    ├── prepare_dataset.py
+    ├── requirements.txt
+    ├── train.py
+    │
+    ├── static/
+    │   ├── favicon.ico
+    │   ├── hyperspeed.js
+    │   ├── script.js
+    │   └── style.css
+    │
+    └── templates/
+        └── index.html
 ```
 
-## How It Works
+---
 
-```text
-URL Input
-    ↓
-Feature Extraction
-    ↓
-Machine Learning Model
-    ↓
-Probability-Based Classification
-    ↓
-Google Safe Browsing Check
-    ↓
-Risk Assessment
-```
+## ⚙️ Installation
 
-## Installation
-
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/MansiRangpara/PhishGuard.git
 cd PhishGuard
 ```
 
-### 2. Create a Virtual Environment
+### 2. Install dependencies
 
 ```bash
-python -m venv venv
+python -m pip install -r backend/requirements.txt
 ```
 
-### 3. Activate the Virtual Environment
+The project pins the XGBoost version used by the trained model:
 
-**Windows:**
-
-```bash
-venv\Scripts\activate
+```text
+xgboost==3.4.1
 ```
 
-**Linux/macOS:**
+### 3. Configure Google Safe Browsing
 
-```bash
-source venv/bin/activate
+Create a file:
+
+```text
+backend/.env
 ```
 
-### 4. Install Dependencies
+Add:
 
-```bash
-pip install -r requirements.txt
+```text
+GOOGLE_SAFE_BROWSING_API_KEY=YOUR_API_KEY
 ```
 
-## Google Safe Browsing API
+Do not commit `.env` to GitHub.
 
-PhishGuard uses the Google Safe Browsing API for additional URL risk assessment.
+The application reads the API key using an environment variable.
 
-Configure your API credentials according to the implementation in `app.py`.
+---
 
-**Important:** Never commit API keys, passwords, tokens, or other sensitive credentials to the repository.
+## ▶️ Run PhishGuard
 
-## Run the Application
+From the project root:
 
 ```bash
+cd backend
 python app.py
 ```
 
-After starting the Flask application, open the local URL displayed in the terminal.
+Open:
 
-## Project Highlights
+```text
+http://127.0.0.1:5000
+```
 
-- Machine learning-based phishing URL classification
-- Real-time URL risk assessment
-- Batch URL analysis
-- Integration with an external security API
-- Web-based security analysis interface
+---
 
-## Future Improvements
+## 🔐 Security
 
-- Expand the feature set used for URL analysis
-- Improve model performance with additional datasets
-- Add more threat intelligence sources
-- Introduce detailed URL analysis reports
-- Add user authentication and activity history
+Sensitive and unnecessary files are excluded from the repository using `.gitignore`.
 
-## Disclaimer
+The following files should remain local:
 
-PhishGuard is an educational and research project developed to demonstrate phishing detection and cybersecurity concepts.
+```text
+.env
+data.csv
+dataset_features.csv
+__pycache__/
+.venv/
+```
 
-The results generated by the application should not be considered a definitive security verdict. Users should use additional security controls and threat intelligence when evaluating potentially malicious URLs.
+The Google Safe Browsing API key should never be hard-coded into `app.py` or committed to GitHub.
 
-## Author
+---
+
+## 🧪 Retraining the Model
+
+The raw dataset is intentionally not included in the repository.
+
+To retrain the model locally:
+
+1. Place the dataset in:
+
+```text
+backend/data.csv
+```
+
+2. Generate the feature dataset:
+
+```bash
+python backend/prepare_dataset.py
+```
+
+3. Train the XGBoost model:
+
+```bash
+python backend/train.py
+```
+
+This generates:
+
+```text
+backend/phishing_model_final.pkl
+```
+
+---
+
+## 📝 Dataset
+
+The project uses a labeled URL dataset containing benign and malicious URL examples.
+
+The raw dataset and generated feature dataset are excluded from GitHub because of their size and because they are not required to run the already-trained application.
+
+---
+
+## 🌐 Google Safe Browsing
+
+PhishGuard sends submitted URLs to Google Safe Browsing for an additional threat check.
+
+The application combines:
+
+```text
+Machine Learning
+       +
+Google Safe Browsing
+       +
+Trusted Domain / Brand Checks
+       ↓
+Final Risk Result
+```
+
+A Google Safe Browsing threat match results in a **Dangerous** classification.
+
+---
+
+## ⚠️ Important Note
+
+PhishGuard is a security research and educational project.
+
+A URL classified as **Safe** does not guarantee that the website is completely harmless. The system combines machine-learning predictions, URL characteristics, trusted-domain rules, and available Safe Browsing results to estimate risk.
+
+---
+
+## 👩‍💻 Author
 
 **Mansi Rangpara**
 
-- GitHub: [MansiRangpara](https://github.com/MansiRangpara)
-- LinkedIn: [Mansi Rangpara](https://linkedin.com/in/mansi-rangpara-a522102bb)
+GitHub: [@MansiRangpara](https://github.com/MansiRangpara)
+
+---
+
+## ⭐ Future Improvements
+
+* Improve the ML model with additional URL and domain features
+* Add domain age and WHOIS-based analysis
+* Add IP reputation checks
+* Improve probability calibration
+* Add scan history and analytics
+* Add model performance dashboard
+* Deploy PhishGuard as a production web application
+
+````
+
+Now let's update the actual file **one command at a time**.
+
+From:
+
+```text
+C:\Users\MANSI RANGPARA\Documents\PhishGuard
+````
+
+run:
+
+```cmd
+notepad README.md
+```
+
+Replace the existing README with the content above, save it, and tell me `done`. Then we'll check it before pushing.
